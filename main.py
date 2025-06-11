@@ -2,7 +2,7 @@ import json
 from http.server import SimpleHTTPRequestHandler, HTTPServer
 from urllib.parse import urlparse, parse_qs
 
-ALLOWED_FILES = {"PM03.json", "PM04.json"}
+ALLOWED_FILES = {"PM03.json", "PM04.json", "PM05.json"}
 
 # Обработчик HTTP-запросов
 class MyHandler(SimpleHTTPRequestHandler):
