@@ -37,12 +37,15 @@
             <p id="final-score"></p>
         </div>
         <button class="button" id="restart-button" style="display:none;">Начать заново</button>
+        <button class="button" id="switch-test-button">Сменить тест</button>
     </div>
 
     <script>
         let QUESTIONS = [];
         let currentQuestionIndex = 0;
         let score = 0;
+        const TEST_FILES = ["PM04.json", "PM03.json"];
+        let currentTestFileIndex = 0;
 
         // Функция для перемешивания массива
         function shuffle(array) {
@@ -54,7 +57,8 @@
 
         // Загрузка вопросов с сервера
         async function loadQuestions() {
-            const response = await fetch("/questions");
+            const file = TEST_FILES[currentTestFileIndex];
+            const response = await fetch(`/questions?file=${encodeURIComponent(file)}`);
             QUESTIONS = await response.json();
             QUESTIONS.forEach(q => shuffle(q.options)); // Перемешиваем варианты перед началом
             showQuestion();
@@ -135,15 +139,20 @@
         // Обработчик кнопки "Начать заново"
         document.getElementById("restart-button").addEventListener("click", restartTest);
 
+        // Обработчик кнопки "Сменить тест"
+        document.getElementById("switch-test-button").addEventListener("click", async () => {
+            currentTestFileIndex = (currentTestFileIndex + 1) % TEST_FILES.length;
+            await restartTest();
+        });
+
         // Сброс теста и начало заново
-        function restartTest() {
+        async function restartTest() {
             currentQuestionIndex = 0;
             score = 0;
-            QUESTIONS.forEach(q => shuffle(q.options)); // Перемешиваем варианты
             document.getElementById("result-section").style.display = "none";
             document.getElementById("question-section").style.display = "block";
             document.getElementById("restart-button").style.display = "none";
-            showQuestion();
+            await loadQuestions();
         }
 
         loadQuestions();
